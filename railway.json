@@ -4,8 +4,8 @@
     "builder": "DOCKERFILE"
   },
   "deploy": {
-    "startCommand": "sh -c 'cd /app/backend && FLASK_PORT=${PORT:-5001} uv run python run.py'",
-    "healthcheckPath": "/api/health",
+    "startCommand": "sh -c 'cd /app/backend && FLASK_PORT=${PORT:-8080} uv run python run.py'",
+    "healthcheckPath": "/health",
     "restartPolicyType": "ON_FAILURE",
     "restartPolicyMaxRetries": 3
   }
