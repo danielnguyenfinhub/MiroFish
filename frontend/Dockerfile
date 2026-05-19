@@ -8,9 +8,9 @@ ARG VITE_BACKEND_URL
 ENV VITE_BACKEND_URL=$VITE_BACKEND_URL
 RUN npm run build
 
-FROM node:20-alpine
-RUN npm install -g serve
-WORKDIR /app
-COPY --from=builder /repo/frontend/dist ./dist
-EXPOSE 3000
-CMD ["sh", "-c", "serve -s dist -p ${PORT:-3000}"]
+FROM nginx:alpine
+COPY --from=builder /repo/frontend/dist /usr/share/nginx/html
+RUN printf 'server {\n  listen $PORT;\n  root /usr/share/nginx/html;\n  index index.html;\n  location / {\n    try_files $uri $uri/ /index.html;\n  }\n}\n' > /tmp/nginx.conf.template
+COPY --from=builder /repo/frontend/dist /usr/share/nginx/html
+EXPOSE 80
+CMD ["sh", "-c", "envsubst '$PORT' < /tmp/nginx.conf.template > /etc/nginx/conf.d/default.conf && nginx -g 'daemon off;'"]
