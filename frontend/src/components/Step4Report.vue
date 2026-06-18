@@ -2127,6 +2127,7 @@ onUnmounted(() => {
 })
 
 watch(() => props.reportId, (newId) => {
+  stopPolling()
   if (newId) {
     agentLogs.value = []
     consoleLogs.value = []
@@ -2140,7 +2141,7 @@ watch(() => props.reportId, (newId) => {
     collapsedSections.value = new Set()
     isComplete.value = false
     startTime.value = null
-    
+
     startPolling()
   }
 }, { immediate: true })

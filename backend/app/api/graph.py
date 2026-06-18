@@ -24,6 +24,11 @@ from . import graph_bp
 logger = get_logger("mirofish.api")
 
 
+def _tb() -> str | None:
+    """Return traceback only in DEBUG mode to avoid leaking internals in production."""
+    return traceback.format_exc() if Config.DEBUG else None
+
+
 def allowed_file(filename: str) -> bool:
     """检查文件扩展名是否允许"""
     if not filename or "." not in filename:
@@ -159,9 +164,7 @@ def generate_ontology():
             }
         )
     except Exception as e:
-        return jsonify(
-            {"success": False, "error": str(e), "traceback": traceback.format_exc()}
-        ), 500
+        return jsonify({"success": False, "error": str(e), "traceback": _tb()}), 500
 
 
 # ============== 接口1b：JSON文本版本（供MCP/API客户端使用）==============
@@ -246,9 +249,7 @@ def generate_ontology_from_text():
         )
 
     except Exception as e:
-        return jsonify(
-            {"success": False, "error": str(e), "traceback": traceback.format_exc()}
-        ), 500
+        return jsonify({"success": False, "error": str(e), "traceback": _tb()}), 500
 
 
 # ============== 接口2：构建图谱 ==============
@@ -421,9 +422,7 @@ def build_graph():
             }
         )
     except Exception as e:
-        return jsonify(
-            {"success": False, "error": str(e), "traceback": traceback.format_exc()}
-        ), 500
+        return jsonify({"success": False, "error": str(e), "traceback": _tb()}), 500
 
 
 # ============== 任务查询接口 ==============
@@ -455,9 +454,7 @@ def get_graph_data(graph_id: str):
         graph_data = builder.get_graph_data(graph_id)
         return jsonify({"success": True, "data": graph_data})
     except Exception as e:
-        return jsonify(
-            {"success": False, "error": str(e), "traceback": traceback.format_exc()}
-        ), 500
+        return jsonify({"success": False, "error": str(e), "traceback": _tb()}), 500
 
 
 @graph_bp.route("/delete/<graph_id>", methods=["DELETE"])
@@ -469,6 +466,4 @@ def delete_graph(graph_id: str):
         builder.delete_graph(graph_id)
         return jsonify({"success": True, "message": t("api.graphDeleted", id=graph_id)})
     except Exception as e:
-        return jsonify(
-            {"success": False, "error": str(e), "traceback": traceback.format_exc()}
-        ), 500
+        return jsonify({"success": False, "error": str(e), "traceback": _tb()}), 500
