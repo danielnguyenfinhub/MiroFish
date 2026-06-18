@@ -22,8 +22,8 @@ class Config:
     """Flask配置类"""
 
     # Flask配置
-    SECRET_KEY = os.environ.get("SECRET_KEY", "mirofish-secret-key")
-    DEBUG = os.environ.get("FLASK_DEBUG", "True").lower() == "true"
+    SECRET_KEY = os.environ.get("SECRET_KEY") or "mirofish-dev-key-change-in-production"
+    DEBUG = os.environ.get("FLASK_DEBUG", "false").lower() == "true"
 
     # JSON配置 - 禁用ASCII转义，让中文直接显示（而不是 \uXXXX 格式）
     JSON_AS_ASCII = False

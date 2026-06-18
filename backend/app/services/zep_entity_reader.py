@@ -3,6 +3,7 @@ Zep实体读取与过滤服务
 从Zep图谱中读取节点，筛选出符合预定义实体类型的节点
 """
 
+import random
 import time
 from collections.abc import Callable
 from dataclasses import dataclass, field
@@ -121,7 +122,7 @@ class ZepEntityReader:
                         f"{delay:.1f}秒后重试..."
                     )
                     time.sleep(delay)
-                    delay *= 2  # 指数退避
+                    delay = delay * 2 * (0.5 + random.random())  # 指数退避 + 抖动，防止惊群
                 else:
                     logger.error(f"Zep {operation_name} 在 {max_retries} 次尝试后仍失败: {str(e)}")
 
@@ -254,6 +255,15 @@ class ZepEntityReader:
         # 构建节点UUID到节点数据的映射
         node_map = {n["uuid"]: n for n in all_nodes}
 
+        # 构建边索引：O(n+m) 而非每个实体遍历全量边 O(n*m)
+        edges_by_source: dict[str, list[dict[str, Any]]] = {}
+        edges_by_target: dict[str, list[dict[str, Any]]] = {}
+        for edge in all_edges:
+            src = edge["source_node_uuid"]
+            tgt = edge["target_node_uuid"]
+            edges_by_source.setdefault(src, []).append(edge)
+            edges_by_target.setdefault(tgt, []).append(edge)
+
         # 筛选符合条件的实体
         filtered_entities = []
         entity_types_found = set()
@@ -290,32 +300,32 @@ class ZepEntityReader:
                 attributes=node["attributes"],
             )
 
-            # 获取相关边和节点
+            # 获取相关边和节点（使用索引，O(1) 查找代替 O(m) 遍历）
             if enrich_with_edges:
                 related_edges = []
                 related_node_uuids = set()
 
-                for edge in all_edges:
-                    if edge["source_node_uuid"] == node["uuid"]:
-                        related_edges.append(
-                            {
-                                "direction": "outgoing",
-                                "edge_name": edge["name"],
-                                "fact": edge["fact"],
-                                "target_node_uuid": edge["target_node_uuid"],
-                            }
-                        )
-                        related_node_uuids.add(edge["target_node_uuid"])
-                    elif edge["target_node_uuid"] == node["uuid"]:
-                        related_edges.append(
-                            {
-                                "direction": "incoming",
-                                "edge_name": edge["name"],
-                                "fact": edge["fact"],
-                                "source_node_uuid": edge["source_node_uuid"],
-                            }
-                        )
-                        related_node_uuids.add(edge["source_node_uuid"])
+                for edge in edges_by_source.get(node["uuid"], []):
+                    related_edges.append(
+                        {
+                            "direction": "outgoing",
+                            "edge_name": edge["name"],
+                            "fact": edge["fact"],
+                            "target_node_uuid": edge["target_node_uuid"],
+                        }
+                    )
+                    related_node_uuids.add(edge["target_node_uuid"])
+
+                for edge in edges_by_target.get(node["uuid"], []):
+                    related_edges.append(
+                        {
+                            "direction": "incoming",
+                            "edge_name": edge["name"],
+                            "fact": edge["fact"],
+                            "source_node_uuid": edge["source_node_uuid"],
+                        }
+                    )
+                    related_node_uuids.add(edge["source_node_uuid"])
 
                 entity.related_edges = related_edges
 
