@@ -43,7 +43,12 @@ htmlcov/
 
 # Cursor
 .cursor/
-.claude/
+
+# Claude Code (track shared hook config, ignore local/secret files)
+.claude/*
+!.claude/settings.json
+!.claude/hooks/
+.claude/settings.local.json
 
 # 文档与测试程序
 mydoc/
