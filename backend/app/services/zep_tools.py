@@ -76,7 +76,9 @@ class NodeInfo:
 
     def to_text(self) -> str:
         """转换为文本格式"""
-        entity_type = next((label for label in self.labels if label not in ["Entity", "Node"]), "未知类型")
+        entity_type = next(
+            (label for label in self.labels if label not in ["Entity", "Node"]), "未知类型"
+        )
         return f"实体: {self.name} (类型: {entity_type})\n摘要: {self.summary}"
 
 
@@ -282,7 +284,9 @@ class PanoramaResult:
         if self.all_nodes:
             text_parts.append("\n### 【涉及实体】")
             for node in self.all_nodes:
-                entity_type = next((label for label in node.labels if label not in ["Entity", "Node"]), "实体")
+                entity_type = next(
+                    (label for label in node.labels if label not in ["Entity", "Node"]), "实体"
+                )
                 text_parts.append(f"- **{node.name}** ({entity_type})")
 
         return "\n".join(text_parts)

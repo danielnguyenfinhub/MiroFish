@@ -10,8 +10,10 @@
     "backend": "cd backend && uv run python run.py",
     "frontend": "cd frontend && npm run dev",
     "build": "cd frontend && npm run build",
-    "lint": "cd backend && uv run ruff check .",
-    "lint:fix": "cd backend && uv run ruff check . --fix && uv run ruff format .",
+    "lint": "npm run lint:backend && npm run lint:frontend",
+    "lint:backend": "cd backend && uv run ruff check .",
+    "lint:frontend": "cd frontend && npm run lint",
+    "lint:fix": "cd backend && uv run ruff check . --fix && uv run ruff format . && cd ../frontend && npm run lint:fix",
     "format": "cd backend && uv run ruff format ."
   },
   "devDependencies": {

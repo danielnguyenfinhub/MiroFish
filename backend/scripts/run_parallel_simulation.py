@@ -413,7 +413,9 @@ class ParallelIPCHandler:
         # 并行执行
         platform_results = await asyncio.gather(*tasks)
 
-        for platform_name, platform_result in zip(platforms_to_interview, platform_results, strict=False):
+        for platform_name, platform_result in zip(
+            platforms_to_interview, platform_results, strict=False
+        ):
             results["platforms"][platform_name] = platform_result
             if "error" not in platform_result:
                 success_count += 1

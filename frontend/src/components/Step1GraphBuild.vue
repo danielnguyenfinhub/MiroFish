@@ -256,12 +256,6 @@ const graphStats = computed(() => {
   return { nodes, edges, types }
 })
 
-const formatDate = (dateStr) => {
-  if (!dateStr) return '--:--:--'
-  const d = new Date(dateStr)
-  return d.toLocaleTimeString('en-US', { hour12: false }) + '.' + d.getMilliseconds()
-}
-
 // Auto-scroll logs
 watch(() => props.systemLogs.length, () => {
   nextTick(() => {

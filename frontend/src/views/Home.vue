@@ -229,7 +229,6 @@ const files = ref([])
 
 // 状态
 const loading = ref(false)
-const error = ref('')
 const isDragOver = ref(false)
 
 // 文件输入引用

@@ -1665,9 +1665,7 @@ class ReportAgent:
                     outline=outline,
                     previous_sections=generated_sections,
                     progress_callback=lambda stage, prog, msg, bp=base_progress: (
-                        progress_callback(
-                            stage, bp + int(prog * 0.7 / total_sections), msg
-                        )
+                        progress_callback(stage, bp + int(prog * 0.7 / total_sections), msg)
                         if progress_callback
                         else None
                     ),

@@ -79,7 +79,7 @@ const router = useRouter()
 const { t } = useI18n()
 
 // Props
-const props = defineProps({
+defineProps({
   reportId: String
 })
 

@@ -246,7 +246,6 @@ const getCardStyle = (index) => {
     // 展开态：网格布局
     const transition = 'transform 700ms cubic-bezier(0.23, 1, 0.32, 1), opacity 700ms cubic-bezier(0.23, 1, 0.32, 1), box-shadow 0.3s ease, border-color 0.3s ease'
 
-    const col = index % CARDS_PER_ROW
     const row = Math.floor(index / CARDS_PER_ROW)
     
     // 计算当前行的卡片数量，确保每行居中

@@ -270,7 +270,9 @@ class ZepEntityReader:
 
             # 如果指定了预定义类型，检查是否匹配
             if defined_entity_types:
-                matching_labels = [label for label in custom_labels if label in defined_entity_types]
+                matching_labels = [
+                    label for label in custom_labels if label in defined_entity_types
+                ]
                 if not matching_labels:
                     continue
                 entity_type = matching_labels[0]
