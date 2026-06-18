@@ -9,7 +9,10 @@
     "dev": "concurrently --kill-others -n \"backend,frontend\" -c \"green,cyan\" \"npm run backend\" \"npm run frontend\"",
     "backend": "cd backend && uv run python run.py",
     "frontend": "cd frontend && npm run dev",
-    "build": "cd frontend && npm run build"
+    "build": "cd frontend && npm run build",
+    "lint": "cd backend && uv run ruff check .",
+    "lint:fix": "cd backend && uv run ruff check . --fix && uv run ruff format .",
+    "format": "cd backend && uv run ruff format ."
   },
   "devDependencies": {
     "concurrently": "^9.1.2"

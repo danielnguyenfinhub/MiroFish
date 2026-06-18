@@ -39,6 +39,7 @@ dev = [
     "pytest>=8.0.0",
     "pytest-asyncio>=0.23.0",
     "pipreqs>=0.5.0",
+    "ruff>=0.6.0",
 ]
 
 [build-system]
@@ -49,7 +50,21 @@ build-backend = "hatchling.build"
 dev = [
     "pytest>=8.0.0",
     "pytest-asyncio>=0.23.0",
+    "ruff>=0.6.0",
 ]
 
 [tool.hatch.build.targets.wheel]
 packages = ["app"]
+
+[tool.ruff]
+target-version = "py311"
+line-length = 100
+# Generated/vendored output and virtual envs are not ours to lint.
+extend-exclude = [".venv", "logs"]
+
+[tool.ruff.lint]
+# A conservative, low-noise rule set: pyflakes (F), pycodestyle errors (E),
+# import sorting (I), pyupgrade (UP), flake8-bugbear (B).
+select = ["E", "F", "I", "UP", "B"]
+# E501 (line length) is handled by the formatter; avoid noisy long-line errors.
+ignore = ["E501"]
