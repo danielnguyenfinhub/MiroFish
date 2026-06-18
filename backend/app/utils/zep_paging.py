@@ -15,7 +15,7 @@ from zep_cloud.client import Zep
 
 from .logger import get_logger
 
-logger = get_logger('mirofish.zep_paging')
+logger = get_logger("mirofish.zep_paging")
 
 _DEFAULT_PAGE_SIZE = 100
 _MAX_NODES = 2000
@@ -50,7 +50,9 @@ def _fetch_page_with_retry(
                 time.sleep(delay)
                 delay *= 2
             else:
-                logger.error(f"Zep {page_description} failed after {max_retries} attempts: {str(e)}")
+                logger.error(
+                    f"Zep {page_description} failed after {max_retries} attempts: {str(e)}"
+                )
 
     assert last_exception is not None
     raise last_exception
@@ -89,14 +91,18 @@ def fetch_all_nodes(
         all_nodes.extend(batch)
         if len(all_nodes) >= max_items:
             all_nodes = all_nodes[:max_items]
-            logger.warning(f"Node count reached limit ({max_items}), stopping pagination for graph {graph_id}")
+            logger.warning(
+                f"Node count reached limit ({max_items}), stopping pagination for graph {graph_id}"
+            )
             break
         if len(batch) < page_size:
             break
 
         cursor = getattr(batch[-1], "uuid_", None) or getattr(batch[-1], "uuid", None)
         if cursor is None:
-            logger.warning(f"Node missing uuid field, stopping pagination at {len(all_nodes)} nodes")
+            logger.warning(
+                f"Node missing uuid field, stopping pagination at {len(all_nodes)} nodes"
+            )
             break
 
     return all_nodes
@@ -137,7 +143,9 @@ def fetch_all_edges(
 
         cursor = getattr(batch[-1], "uuid_", None) or getattr(batch[-1], "uuid", None)
         if cursor is None:
-            logger.warning(f"Edge missing uuid field, stopping pagination at {len(all_edges)} edges")
+            logger.warning(
+                f"Edge missing uuid field, stopping pagination at {len(all_edges)} edges"
+            )
             break
 
     return all_edges
