@@ -291,7 +291,6 @@ import { useRouter } from 'vue-router'
 import { useI18n } from 'vue-i18n'
 import {
   startSimulation,
-  stopSimulation,
   getRunStatus,
   getRunStatusDetail
 } from '../api/simulation'
@@ -437,31 +436,6 @@ const doStartSimulation = async () => {
   }
 }
 
-// 停止模拟
-const handleStopSimulation = async () => {
-  if (!props.simulationId) return
-  
-  isStopping.value = true
-  addLog(t('log.stoppingSim'))
-  
-  try {
-    const res = await stopSimulation({ simulation_id: props.simulationId })
-    
-    if (res.success) {
-      addLog(t('log.simStoppedSuccess'))
-      phase.value = 2
-      stopPolling()
-      emit('update-status', 'completed')
-    } else {
-      addLog(t('log.stopFailed', { error: res.error || t('common.unknownError') }))
-    }
-  } catch (err) {
-    addLog(t('log.stopException', { error: err.message }))
-  } finally {
-    isStopping.value = false
-  }
-}
-
 // 轮询状态
 let statusTimer = null
 let detailTimer = null
@@ -568,7 +542,6 @@ const fetchRunStatusDetail = async () => {
       const serverActions = res.data.all_actions || []
       
       // 增量添加新动作（去重）
-      let newActionsAdded = 0
       serverActions.forEach(action => {
         // 生成唯一ID
         const actionId = action.id || `${action.timestamp}-${action.platform}-${action.agent_id}-${action.action_type}`
@@ -579,7 +552,6 @@ const fetchRunStatusDetail = async () => {
             ...action,
             _uniqueId: actionId
           })
-          newActionsAdded++
         }
       })
       

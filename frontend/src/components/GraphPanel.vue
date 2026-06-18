@@ -246,7 +246,7 @@ const props = defineProps({
   isSimulating: Boolean
 })
 
-const emit = defineEmits(['refresh', 'toggle-maximize'])
+defineEmits(['refresh', 'toggle-maximize'])
 
 const graphContainer = ref(null)
 const graphSvg = ref(null)

@@ -638,7 +638,6 @@ import {
   prepareSimulation,
   getPrepareStatus,
   getSimulationProfilesRealtime,
-  getSimulationConfig,
   getSimulationConfigRealtime
 } from '../api/simulation'
 
@@ -664,7 +663,6 @@ const entityTypes = ref([])
 const expectedTotal = ref(null)
 const simulationConfig = ref(null)
 const selectedProfile = ref(null)
-const showProfilesDetail = ref(true)
 
 // 日志去重：记录上一次输出的关键信息
 let lastLoggedMessage = ''
@@ -711,14 +709,6 @@ let pollTimer = null
 let profilesTimer = null
 let configTimer = null
 
-// Computed
-const displayProfiles = computed(() => {
-  if (showProfilesDetail.value) {
-    return profiles.value
-  }
-  return profiles.value.slice(0, 6)
-})
-
 // 根据agent_id获取对应的username
 const getAgentUsername = (agentId) => {
   if (profiles.value && profiles.value.length > agentId && agentId >= 0) {
@@ -755,13 +745,6 @@ const handleStartSimulation = () => {
   }
   
   emit('next-step', params)
-}
-
-const truncateBio = (bio) => {
-  if (bio.length > 80) {
-    return bio.substring(0, 80) + '...'
-  }
-  return bio
 }
 
 const selectProfile = (profile) => {
@@ -915,7 +898,6 @@ const fetchProfilesRealtime = async () => {
     const res = await getSimulationProfilesRealtime(props.simulationId, 'reddit')
     
     if (res.success && res.data) {
-      const prevCount = profiles.value.length
       profiles.value = res.data.profiles || []
       // 只有当 API 返回有效值时才更新，避免覆盖已有的有效值
       if (res.data.total_expected) {

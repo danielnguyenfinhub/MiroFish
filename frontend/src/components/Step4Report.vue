@@ -454,17 +454,6 @@ const toggleRawResult = (timestamp, event) => {
   }
 }
 
-const toggleSectionContent = (idx) => {
-  if (!generatedSections.value[idx + 1]) return
-  const newSet = new Set(expandedContent.value)
-  if (newSet.has(idx)) {
-    newSet.delete(idx)
-  } else {
-    newSet.add(idx)
-  }
-  expandedContent.value = newSet
-}
-
 const toggleSectionCollapse = (idx) => {
   // 只有已完成的章节才能折叠
   if (!generatedSections.value[idx + 1]) return
@@ -1291,7 +1280,7 @@ const InterviewDisplay = {
     const cleanQuoteText = (text) => {
       if (!text) return ''
       // Remove leading patterns like "1. ", "2. ", "1、", "（1）", "(1)" etc.
-      return text.replace(/^\s*\d+[\.\、\)）]\s*/, '').trim()
+      return text.replace(/^\s*\d+[.、)）]\s*/, '').trim()
     }
     
     const activeIndex = ref(0)
@@ -1726,11 +1715,6 @@ const completedSections = computed(() => {
   return Object.keys(generatedSections.value).length
 })
 
-const progressPercent = computed(() => {
-  if (totalSections.value === 0) return 0
-  return Math.round((completedSections.value / totalSections.value) * 100)
-})
-
 const totalToolCalls = computed(() => {
   return agentLogs.value.filter(l => l.action === 'tool_call').length
 })
@@ -2082,51 +2066,6 @@ const fetchAgentLog = async () => {
   } catch (err) {
     console.warn('Failed to fetch agent log:', err)
   }
-}
-
-// 提取最终答案内容 - 从 LLM response 中提取章节内容
-const extractFinalContent = (response) => {
-  if (!response) return null
-  
-  // 尝试提取 <final_answer> 标签内的内容
-  const finalAnswerTagMatch = response.match(/<final_answer>([\s\S]*?)<\/final_answer>/)
-  if (finalAnswerTagMatch) {
-    return finalAnswerTagMatch[1].trim()
-  }
-  
-  // 尝试找 Final Answer: 后面的内容（支持多种格式）
-  // 格式1: Final Answer:\n\n内容
-  // 格式2: Final Answer: 内容
-  const finalAnswerMatch = response.match(/Final\s*Answer:\s*\n*([\s\S]*)$/i)
-  if (finalAnswerMatch) {
-    return finalAnswerMatch[1].trim()
-  }
-  
-  // 尝试找 最终答案: 后面的内容
-  const chineseFinalMatch = response.match(/最终答案[:：]\s*\n*([\s\S]*)$/i)
-  if (chineseFinalMatch) {
-    return chineseFinalMatch[1].trim()
-  }
-  
-  // 如果以 ## 或 # 或 > 开头，可能是直接的 markdown 内容
-  const trimmedResponse = response.trim()
-  if (trimmedResponse.match(/^[#>]/)) {
-    return trimmedResponse
-  }
-  
-  // 如果内容较长且包含markdown格式，尝试移除思考过程后返回
-  if (response.length > 300 && (response.includes('**') || response.includes('>'))) {
-    // 移除 Thought: 开头的思考过程
-    const thoughtMatch = response.match(/^Thought:[\s\S]*?(?=\n\n[^T]|\n\n$)/i)
-    if (thoughtMatch) {
-      const afterThought = response.substring(thoughtMatch[0].length).trim()
-      if (afterThought.length > 100) {
-        return afterThought
-      }
-    }
-  }
-  
-  return null
 }
 
 const fetchConsoleLog = async () => {
