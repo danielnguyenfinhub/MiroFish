@@ -9,6 +9,11 @@ if [ "${CLAUDE_CODE_REMOTE:-}" != "true" ]; then
   exit 0
 fi
 
+# Run asynchronously so the session starts immediately while dependencies
+# install in the background. Note: there is a brief window at startup where
+# deps may not yet be ready (e.g. running tests in the first moments).
+echo '{"async": true, "asyncTimeout": 600000}'
+
 PROJECT_DIR="${CLAUDE_PROJECT_DIR:-$(cd "$(dirname "${BASH_SOURCE[0]}")/../.." && pwd)}"
 cd "$PROJECT_DIR"
 
